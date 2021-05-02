@@ -9,7 +9,8 @@ Trabajo Práctico número 1 de la materia **Introducción a los Sistemas Distrib
 | Nombre | Apellido | Padrón | Mail                |
 | ------ | -------- | ------ | ------------------- |
 | Mauro  | Parafati | 102749 | mparafati@fi.uba.ar |
-| ?      | ?        | ?      | ??@fi.uba.ar        |
+| Taiel | Colavecchia | 102510 | tcolavecchia@fi.uba.ar |
+| Yuhong | Huang | 102146 | yhuang@fi.uba.ar |
 
 ## Requisitos :ballot_box_with_check:
 

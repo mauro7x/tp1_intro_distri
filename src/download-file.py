@@ -1,6 +1,8 @@
 # download-file.py
 # Client-side command
 
+import argparse
+
 def parse_args():
     """
     Parse args using `argparse` in order to fullfil requirements.

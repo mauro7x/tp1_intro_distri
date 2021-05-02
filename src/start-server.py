@@ -1,11 +1,25 @@
 # start-server.py
 # Server-side
-# Description
+
+import argparse
+
+def parse_args():
+    """
+    Parse args using `argparse` in order to fullfil requirements.
+    """
+
+    parser = argparse.ArgumentParser()
+    ## TODO: Add arguments
+    
+    return parser.parse_args()
+    
 
 def main():
     """
-    ¿Documentación?
+    TODO: Description
     """
+
+    args = parse_args()    
     
     pass
 

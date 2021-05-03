@@ -23,7 +23,7 @@ class Socket:
 
     def accept(self):
         peer, addr = self.skt.accept()
-        logger.debug(f"Socket: client connected from {addr}")
+        logger.info(f"Socket: client connected from {addr[0]}:{addr[1]}.")
         return Socket(peer)
 
     def close(self):

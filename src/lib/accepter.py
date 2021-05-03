@@ -31,7 +31,7 @@ class Accepter:
 
     def _run(self):
         while self.accepting:
-            logger.debug("Accepter: Waiting for Client.")
+            logger.debug("Accepter: waiting for client...")
             try:
                 peer = self.skt.accept()
             except OSError:
@@ -49,5 +49,8 @@ class Accepter:
             self.clients.append(handler)
 
     def stop(self):
+        logger.debug("Accepter: stopping...")
         self.accepting = False
         self.skt.close()
+        logger.debug("Accepter: stopped.")
+        

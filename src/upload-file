@@ -4,7 +4,7 @@
 """
 Upload file script description.
 """
-from lib.client.parse import parse_args_upload
+from lib.cli_parse import parse_args_upload
 
 
 def main():

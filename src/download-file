@@ -4,7 +4,7 @@
 """
 download-file description.
 """
-from lib.client.parse import parse_args_download
+from lib.cli_parse import parse_args_download
 
 
 def main():

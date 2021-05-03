@@ -14,10 +14,10 @@ def _parse_args(add_args=None):
                        help="Increase output verbosity")
     group.add_argument("-q", "--quiet", action="store_true",
                        help="Decrease output verbosity")
-    parser.add_argument("-H", "--host", type=str, required=True,
+    parser.add_argument("-H", "--host", type=str, default="localhost",
                         help="service IP address")
-    parser.add_argument("-p", "--port", type=str,
-                        required=True, help="service port")
+    parser.add_argument("-p", "--port", type=int,
+                        default=4321, help="service port")
 
     if add_args is not None:
         add_args(parser)
@@ -25,12 +25,14 @@ def _parse_args(add_args=None):
 
 
 def _add_name_arg(parser):
-    parser.add_argument("-n", "--name", required=True, help="file name")
+    parser.add_argument("-n", "--name", type=str,
+                        required=True, help="file name")
 
 
 def _args_upload(parser):
     _add_name_arg(parser)
-    parser.add_argument("-d", "--dst", type=str, help="destination file path")
+    parser.add_argument("-d", "--dst", type=str,
+                        required=True, help="destination file path")
 
 
 def parse_args_upload():
@@ -43,7 +45,7 @@ def _args_download(parser):
 
 
 def parse_args_download():
-    return _parse_args(_args_upload)
+    return _parse_args(_args_download)
 
 
 def _args_list(parser):

@@ -1,10 +1,32 @@
 #!/usr/bin/python3
-# start-server
-# Server-side
 """
 start-server description.
 """
-from server.parse import parse_args
+from argparse import ArgumentParser
+from lib.socket_tcp import Socket
+from lib.accepter import Accepter
+from lib.logger import logger, DEBUG_LEVEL, INFO_LEVEL, FATAL_LEVEL
+
+
+def parse_args():
+    """
+    Parse args using `argparse` in order to fullfil requirements.
+    """
+
+    parser = ArgumentParser(description=__file__.__doc__)
+    group = parser.add_mutually_exclusive_group()
+    group.add_argument("-v", "--verbose", action="store_const",
+                       dest="level", const=DEBUG_LEVEL, default=INFO_LEVEL,
+                       help="Increase output verbosity")
+    group.add_argument("-q", "--quiet", action="store_const",
+                       dest="level", const=FATAL_LEVEL,
+                       help="Decrease output verbosity")
+    parser.add_argument("-H", "--host", type=str, default="localhost",
+                        help="service IP address")
+    parser.add_argument("-p", "--port", type=int,
+                        default=4321, help="service port")
+
+    return parser.parse_args()
 
 
 def main():
@@ -13,7 +35,24 @@ def main():
     """
 
     args = parse_args()
-    (args.host, args.port)  # adress
+    logger.setLevel(args.level)
+
+    skt = Socket()
+    logger.debug('Socket created.')
+
+    skt.bind(args.host, args.port)
+    logger.debug(f'Socket bound {args.host}:{args.port}')
+
+    skt.listen()
+
+    logger.info(f'Listening on port: {args.port}')
+    accepter = Accepter(skt)
+
+    try:
+        while True:
+            input()
+    except EOFError:
+        accepter.stop()
 
     return
 

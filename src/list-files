@@ -4,7 +4,7 @@
 """
 List Files description.
 """
-from lib.client.parse import parse_args_list
+from lib.cli_parse import parse_args_list
 
 
 def main():

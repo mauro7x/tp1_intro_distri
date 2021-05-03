@@ -1,0 +1,22 @@
+#!/usr/bin/python3
+# list-files
+# Client-side command
+"""
+List Files description.
+"""
+from lib.client.parse import parse_args_list
+
+
+def main():
+    """
+    TODO: Description
+    """
+
+    args = parse_args_list()
+    (args.host, args.port)  # address
+
+    return
+
+
+if __name__ == "__main__":
+    main()

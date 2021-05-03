@@ -1,0 +1,22 @@
+#!/usr/bin/python3
+# start-server
+# Server-side
+"""
+start-server description.
+"""
+from server.parse import parse_args
+
+
+def main():
+    """
+    TODO: Description
+    """
+
+    args = parse_args()
+    (args.host, args.port)  # adress
+
+    return
+
+
+if __name__ == "__main__":
+    main()

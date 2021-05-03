@@ -1,0 +1,22 @@
+#!/usr/bin/python3
+# download-file
+# Client-side command
+"""
+download-file description.
+"""
+from lib.client.parse import parse_args_download
+
+
+def main():
+    """
+    TODO: Description
+    """
+
+    args = parse_args_download()
+    (args.host, args.port)  # address
+
+    return
+
+
+if __name__ == "__main__":
+    main()

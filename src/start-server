@@ -38,15 +38,16 @@ def main():
     logger.setLevel(args.level)
 
     skt = Socket()
-    logger.debug('Socket created.')
+    logger.debug("Socket created.")
 
     skt.bind(args.host, args.port)
-    logger.debug(f'Socket bound {args.host}:{args.port}')
+    logger.debug(f"Socket bound to {args.host}:{args.port}.")
 
     skt.listen()
+    logger.info(f"Listening on port: {args.port}.")
 
-    logger.info(f'Listening on port: {args.port}')
     accepter = Accepter(skt)
+    logger.info(f"Accepting requests.")
 
     try:
         while True:
@@ -54,7 +55,7 @@ def main():
     except EOFError:
         accepter.stop()
 
-    return
+    logger.info("[TODO] Show some stats!")
 
 
 if __name__ == "__main__":

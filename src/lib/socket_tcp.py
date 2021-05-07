@@ -23,15 +23,18 @@ class Socket:
 
     def accept(self):
         peer, addr = self.skt.accept()
-        logger.info(f"Socket: client connected from {addr[0]}:{addr[1]}.")
+        logger.info(f"[Socket] Client connected from {addr[0]}:{addr[1]}.")
         return Socket(peer)
 
     def close(self):
-        self.skt.shutdown(SHUT_RDWR)
-        self.skt.close()
+        try:
+            self.skt.shutdown(SHUT_RDWR)
+            self.skt.close()
+        except OSError:
+            return
 
     def send_file(self, f):
-        pass
+        logger.debug("[Socket] send_file not implemented yet.")
 
     def recv_file(self, f):
-        pass
+        logger.debug("[Socket] recv_file not implemented yet.")

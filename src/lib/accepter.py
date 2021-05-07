@@ -1,23 +1,8 @@
 from threading import Thread
-from lib.socket_tcp import Socket
 from collections import deque
+from lib.client_handler import ClientHandler
+from lib.socket_tcp import Socket
 from lib.logger import logger
-
-
-class ClientHandler:
-
-    def __init__(self, skt: Socket):
-        self.th = Thread(None, self._run, self)
-        self.skt = skt
-
-    def _run(self):
-        pass
-
-    def join(self, force=False):
-        pass
-
-    def is_done(self):
-        return False
 
 
 class Accepter:
@@ -26,12 +11,12 @@ class Accepter:
         self.th = Thread(None, self._run)
         self.skt = skt
         self.accepting = True
-        self.th.start()
         self.clients = deque()
+        self.th.start()
 
     def _run(self):
         while self.accepting:
-            logger.debug("Accepter: waiting for client...")
+            logger.debug("[Accepter] Waiting for client...")
             try:
                 peer = self.skt.accept()
             except OSError:
@@ -43,14 +28,15 @@ class Accepter:
     def _join_connections(self, force=False):
         for _ in range(len(self.clients)):
             handler = self.clients.popleft()
+
             if force or handler.is_done():
                 handler.join(force)
+                logger.debug("[Accepter] Client joined.")
                 continue
+
             self.clients.append(handler)
 
     def stop(self):
-        logger.debug("Accepter: stopping...")
         self.accepting = False
         self.skt.close()
-        logger.debug("Accepter: stopped.")
-        
+        self.th.join()

@@ -5,6 +5,8 @@
 Upload file script description.
 """
 from lib.cli_parse import parse_args_upload
+from lib.socket_tcp import Socket
+from os import SEEK_END, SEEK_SET
 
 
 def main():
@@ -13,7 +15,11 @@ def main():
     """
 
     args = parse_args_upload()
-    (args.host, args.port)  # address
+
+    socket = Socket()
+    socket.connect(args.host, args.port)
+
+    socket.send_file(args.name, args.dst)
 
     return
 

@@ -21,10 +21,12 @@ def parse_args():
     group.add_argument("-q", "--quiet", action="store_const",
                        dest="level", const=FATAL_LEVEL,
                        help="Decrease output verbosity")
-    parser.add_argument("-H", "--host", type=str, default="localhost",
-                        help="service IP address")
-    parser.add_argument("-p", "--port", type=int,
+    parser.add_argument("-H", "--host", dest="ADDR", type=str,
+                        default="localhost", help="service IP address")
+    parser.add_argument("-p", "--port", dest="PORT", type=int,
                         default=4321, help="service port")
+    parser.add_argument("-s", "--storage", dest="DIRPATH", type=str,
+                        default="./files/", help="storage dir path")
 
     return parser.parse_args()
 
@@ -40,14 +42,12 @@ def main():
     skt = Socket()
     logger.debug("Socket created.")
 
-    skt.bind(args.host, args.port)
-    logger.debug(f"Socket bound to {args.host}:{args.port}.")
+    skt.bind(args.ADDR, args.PORT)
+    logger.debug(f"Socket bound to {args.ADDR}:{args.PORT}.")
 
     skt.listen()
-    logger.info(f"Listening on port: {args.port}.")
-
     accepter = Accepter(skt)
-    logger.info(f"Accepting requests.")
+    logger.info(f"Listening on port {args.PORT}.")
 
     try:
         while True:

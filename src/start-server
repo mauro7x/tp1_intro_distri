@@ -2,11 +2,14 @@
 """
 start-server description.
 """
-from os import chdir
+from os import chdir, mkdir
 from argparse import ArgumentParser
 from lib.socket_tcp import Socket
 from lib.accepter import Accepter
 from lib.logger import logger, DEBUG_LEVEL, INFO_LEVEL, FATAL_LEVEL
+from __main__ import __doc__ as description
+
+DEFAULT_DIRPATH = "./files"
 
 
 def parse_args():
@@ -14,7 +17,7 @@ def parse_args():
     Parse args using `argparse` in order to fullfil requirements.
     """
 
-    parser = ArgumentParser(description=__file__.__doc__)
+    parser = ArgumentParser(description=description)
     group = parser.add_mutually_exclusive_group()
     group.add_argument("-v", "--verbose", action="store_const",
                        dest="level", const=DEBUG_LEVEL, default=INFO_LEVEL,
@@ -27,7 +30,7 @@ def parse_args():
     parser.add_argument("-p", "--port", dest="PORT", type=int,
                         default=4321, help="service port")
     parser.add_argument("-s", "--storage", dest="DIRPATH", type=str,
-                        default="./files/", help="storage dir path")
+                        default=DEFAULT_DIRPATH, help="storage dir path")
 
     return parser.parse_args()
 
@@ -43,8 +46,11 @@ def main():
     try:
         chdir(args.DIRPATH)
     except FileNotFoundError as e:
-        logger.fatal(e.strerror)
-        exit(1)
+        if args.DIRPATH == DEFAULT_DIRPATH:
+            mkdir(args.DIRPATH)
+        else:
+            logger.fatal(e.strerror + args.DIRPATH)
+            exit(1)
 
     skt = Socket()
     logger.debug("Socket created.")
@@ -66,4 +72,9 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    try:
+        main()
+    except Exception as e:
+        logger.fatal(e)
+    except ...:
+        logger.fatal("Unknown Error")

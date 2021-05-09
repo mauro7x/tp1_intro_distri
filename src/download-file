@@ -5,6 +5,9 @@
 download-file description.
 """
 from lib.cli_parse import parse_args_download
+from lib.socket_tcp import Socket
+from lib.protocol import (
+    send_opcode, DOWNLOAD_FILE_OP, send_filename, recv_file)
 
 
 def main():
@@ -13,7 +16,16 @@ def main():
     """
 
     args = parse_args_download()
-    (args.host, args.port)  # address
+
+    skt = Socket()
+    skt.connect(args.ADDR, args.PORT)
+
+    send_opcode(skt, DOWNLOAD_FILE_OP)
+    send_filename(skt, args.FILENAME)
+
+    with open(args.FILEPATH, 'wb') as f:
+        for file_chunk in recv_file(skt):
+            f.write(file_chunk)
 
     return
 

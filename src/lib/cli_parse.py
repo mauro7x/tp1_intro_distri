@@ -17,8 +17,8 @@ def _parse_args(add_args=None):
     group.add_argument("-q", "--quiet", action="store_const",
                        dest="level", const=FATAL_LEVEL,
                        help="Decrease output verbosity")
-    parser.add_argument("-H", "--host", dest="ADDR", type=str, default="localhost",
-                        help="service IP address")
+    parser.add_argument("-H", "--host", dest="ADDR", type=str,
+                        default="localhost", help="service IP address")
     parser.add_argument("-p", "--port", dest="PORT", type=int,
                         default=4321, help="service port")
 

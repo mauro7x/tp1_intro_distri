@@ -6,7 +6,7 @@ Upload file script description.
 """
 from lib.cli_parse import parse_args_upload
 from lib.socket_tcp import Socket
-from os import SEEK_END, SEEK_SET
+from lib.protocol import UPLOAD_FILE_OP, send_opcode, send_file, send_filename
 
 
 def main():
@@ -16,12 +16,17 @@ def main():
 
     args = parse_args_upload()
 
-    socket = Socket()
-    socket.connect(args.host, args.port)
+    skt = Socket()
+    skt.connect(args.ADDR, args.PORT)
 
-    socket.send_file(args.name, args.dst)
+    send_opcode(skt, UPLOAD_FILE_OP)
 
-    return
+    send_filename(skt, args.FILENAME)
+
+    with open(args.FILEPATH, 'rb') as f:
+        send_file(skt, f)
+
+    return 0
 
 
 if __name__ == "__main__":

@@ -5,6 +5,13 @@
 List Files description.
 """
 from lib.cli_parse import parse_args_list
+from lib.socket_tcp import Socket
+from lib.protocol import LIST_FILES_OP, send_opcode, recv_list
+from datetime import datetime
+
+
+def get_size_readable(size: int) -> str:
+    pass
 
 
 def main():
@@ -13,7 +20,17 @@ def main():
     """
 
     args = parse_args_list()
-    (args.host, args.port)  # address
+    skt = Socket()
+    skt.connect(args.ADDR, args.PORT)
+
+    send_opcode(skt, LIST_FILES_OP)
+
+    files_list = recv_list(skt)
+    print(f"Archivos disponibles: ({len(files_list)})")
+    for filename, size, mtime in files_list:
+        print(
+            f"* [{datetime.fromtimestamp(mtime)}] {filename} - "
+            f"{get_size_readable(size)}")
 
     return
 

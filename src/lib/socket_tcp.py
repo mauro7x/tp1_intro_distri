@@ -53,4 +53,4 @@ class Socket:
             data.append(segment)
             bytes_recd += len(segment)
 
-        return b''.join(chunks)
+        return b''.join(data)

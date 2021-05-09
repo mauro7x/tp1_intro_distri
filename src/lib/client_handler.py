@@ -3,6 +3,7 @@ from itertools import count as it_count
 from lib.socket_tcp import Socket
 from lib.logger import logger
 import lib.protocol as prt
+from os import listdir, path
 
 
 def _handle_upload_file(skt: Socket) -> None:
@@ -11,14 +12,28 @@ def _handle_upload_file(skt: Socket) -> None:
     with open(filename, 'wb') as f:
         for file_chunk in prt.recv_file(skt):
             f.write(file_chunk)
+    return
 
 
 def _handle_download_file(skt: Socket) -> None:
-    pass
+    filename = prt.recv_filename(skt)
+
+    try:
+        with open(filename, 'rb') as f:
+            prt.send_file(skt, f)
+    except FileNotFoundError:
+        prt.send_error()
+        pass
 
 
 def _handle_list_files(skt: Socket) -> None:
-    pass
+    files_list = []
+    for file in listdir():
+        if path.isdir(file):
+            continue
+        files_list.append((file, path.getsize(file), path.getmtime(file)))
+
+    prt.send_list(skt, files_list)
 
 
 def _handle_unknown_cmd(skt: Socket) -> None:
@@ -39,8 +54,7 @@ class ClientHandler:
     def _run(self):
         logger.debug(f"[ClientHandler:{self.id}] Started.")
 
-        opcode = self.skt.recv(prt.OPCODE_SIZE)
-        opcode = prt.decode_opcode(opcode)
+        opcode = prt.recv_opcode(self.skt)
 
         if opcode == prt.UPLOAD_FILE_OP:
             _handle_upload_file(self.skt)

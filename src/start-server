@@ -2,6 +2,7 @@
 """
 start-server description.
 """
+from os import chdir
 from argparse import ArgumentParser
 from lib.socket_tcp import Socket
 from lib.accepter import Accepter
@@ -38,6 +39,12 @@ def main():
 
     args = parse_args()
     logger.setLevel(args.level)
+
+    try:
+        chdir(args.DIRPATH)
+    except FileNotFoundError as e:
+        logger.fatal(e.strerror)
+        exit(1)
 
     skt = Socket()
     logger.debug("Socket created.")

@@ -1,20 +1,18 @@
 #!/usr/bin/python3
 """
-Upload file script description.
+Sends a request to the specified server in order to upload the specified
+file and make it available to download.
 """
+
 from os import path
 from lib.cli_parse import parse_args_upload
 from lib.socket_tcp import Socket
-from lib.protocol import UPLOAD_FILE_OP, send_opcode, send_file, send_filename
 from lib.logger import logger
+import lib.protocol as prt
 
 
-def main():
-    """
-    TODO: description
-    """
-
-    args = parse_args_upload()
+def main(args):
+    logger.setLevel(args.level)
 
     if not path.isfile(args.FILEPATH):
         raise FileNotFoundError(f"File not found: {args.FILEPATH}")
@@ -22,18 +20,23 @@ def main():
     skt = Socket()
     skt.connect(args.ADDR, args.PORT)
 
-    send_opcode(skt, UPLOAD_FILE_OP)
+    prt.send_opcode(skt, prt.UPLOAD_FILE_OP)
+    s = prt.recv_status(skt)
+    if s:
+        raise RuntimeError(prt.get_error_msg(s))
 
-    send_filename(skt, args.FILENAME)
+    prt.send_filename(skt, args.FILENAME)
 
     with open(args.FILEPATH, 'rb') as f:
-        send_file(skt, f)
+        prt.send_file(skt, f)
 
     return 0
 
 
 if __name__ == "__main__":
+    args = parse_args_upload()
     try:
-        main()
+        main(args)
     except BaseException as e:
         logger.fatal(e)
+        exit(1)

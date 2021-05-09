@@ -1,12 +1,15 @@
-from lib.socket_tcp import Socket
 from os import SEEK_END
+from lib.socket_tcp import Socket
 
+# -----------------------------------------------------------------------------
+# constants
 
-MAX_NAME = 255
+# config
 INT_ENCODING = 'big'
 
 # sizes
 OPCODE_SIZE = 1
+STATUS_SIZE = 1
 INT_SIZE = 8
 CHUNK_SIZE = 1024
 
@@ -15,45 +18,52 @@ UPLOAD_FILE_OP = 0
 DOWNLOAD_FILE_OP = 1
 LIST_FILES_OP = 2
 
+# status codes
+NO_ERR = 0
+UNKNOWN_OP_ERR = 1
+FILE_NOT_FOUND_ERR = 2
 
-def decode_int(bytes: bytearray) -> int:
-    return int.from_bytes(bytes, INT_ENCODING)
+# -----------------------------------------------------------------------------
+# encoders/decoders
 
 
 def encode_int(i: int) -> bytearray:
     return i.to_bytes(INT_SIZE, INT_ENCODING)
 
 
-def recv_opcode(skt: Socket) -> int:
-    return int.from_bytes(skt.recv(OPCODE_SIZE), INT_ENCODING)
+def decode_int(bytes: bytearray) -> int:
+    return int.from_bytes(bytes, INT_ENCODING)
+
+# -----------------------------------------------------------------------------
+# wrappers
+
+
+def send_status(skt: Socket, status: int) -> None:
+    skt.send(status.to_bytes(STATUS_SIZE, INT_ENCODING))
+
+
+def recv_status(skt: Socket) -> int:
+    return int.from_bytes(skt.recv(STATUS_SIZE), INT_ENCODING)
 
 
 def send_opcode(skt: Socket, opcode: int) -> None:
     skt.send(opcode.to_bytes(OPCODE_SIZE, INT_ENCODING))
 
 
-def recv_filename(skt: Socket) -> str:
-    filename_size = decode_int(skt.recv(INT_SIZE))
-    filename = skt.recv(filename_size).decode()
-    return filename
-
-
-def recv_file(skt: Socket):
-    file_size = decode_int(skt.recv(INT_SIZE))
-    if file_size < 0:
-        pass
-
-    recd = 0
-    while recd < file_size:
-        file_chunk = skt.recv(min(file_size - recd, CHUNK_SIZE))
-        recd += len(file_chunk)
-        yield file_chunk
+def recv_opcode(skt: Socket) -> int:
+    return int.from_bytes(skt.recv(OPCODE_SIZE), INT_ENCODING)
 
 
 def send_filename(skt: Socket, filename: str) -> None:
     bytes = filename.encode()
     skt.send(encode_int(len(bytes)))
     skt.send(bytes)
+
+
+def recv_filename(skt: Socket) -> str:
+    filename_size = decode_int(skt.recv(INT_SIZE))
+    filename = skt.recv(filename_size).decode()
+    return filename
 
 
 def send_file(skt: Socket, f):
@@ -68,6 +78,18 @@ def send_file(skt: Socket, f):
     while chunk:
         skt.send(chunk)
         chunk = f.read(CHUNK_SIZE)
+
+
+def recv_file(skt: Socket):
+    file_size = decode_int(skt.recv(INT_SIZE))
+    if file_size < 0:
+        pass
+
+    recd = 0
+    while recd < file_size:
+        file_chunk = skt.recv(min(file_size - recd, CHUNK_SIZE))
+        recd += len(file_chunk)
+        yield file_chunk
 
 
 def send_list(skt: Socket, list: list) -> None:
@@ -90,4 +112,21 @@ def recv_list(skt: Socket) -> list:
         recd += len(chunk)
         chunks.append(chunk.decode())
 
-    return list(map(eval, (''.join(chunks)).split('\n')))
+    if chunks:
+        return list(map(eval, (''.join(chunks)).split('\n')))
+    return []
+
+# -----------------------------------------------------------------------------
+# error msgs
+
+
+def get_error_msg(err_code: int) -> str:
+    if err_code == UNKNOWN_OP_ERR:
+        return "Opcode desconocido por el servidor."
+    elif err_code == FILE_NOT_FOUND_ERR:
+        return "El archivo no existe en el servidor."
+
+    return ""
+
+
+# -----------------------------------------------------------------------------

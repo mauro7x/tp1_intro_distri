@@ -1,36 +1,42 @@
 #!/usr/bin/python3
 """
-download-file description.
+Sends a request to the specified server in order to download the specified
+file.
 """
+
 from lib.cli_parse import parse_args_download
 from lib.socket_tcp import Socket
-from lib.protocol import (
-    send_opcode, DOWNLOAD_FILE_OP, send_filename, recv_file)
 from lib.logger import logger
+import lib.protocol as prt
 
 
-def main():
-    """
-    TODO: Description
-    """
-
-    args = parse_args_download()
+def main(args):
+    logger.setLevel(args.level)
 
     skt = Socket()
     skt.connect(args.ADDR, args.PORT)
 
-    send_opcode(skt, DOWNLOAD_FILE_OP)
-    send_filename(skt, args.FILENAME)
+    prt.send_opcode(skt, prt.DOWNLOAD_FILE_OP)
+    s = prt.recv_status(skt)
+    if s:
+        raise RuntimeError(prt.get_error_msg(s))
+
+    prt.send_filename(skt, args.FILENAME)
+    s = prt.recv_status(skt)
+    if s:
+        raise RuntimeError(prt.get_error_msg(s))
 
     with open(args.FILEPATH, 'wb') as f:
-        for file_chunk in recv_file(skt):
+        for file_chunk in prt.recv_file(skt):
             f.write(file_chunk)
 
-    return
+    return 0
 
 
 if __name__ == "__main__":
+    args = parse_args_download()
     try:
-        main()
-    except Exception as e:
+        main(args)
+    except BaseException as e:
         logger.fatal(e)
+        exit(1)

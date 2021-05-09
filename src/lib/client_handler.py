@@ -1,32 +1,46 @@
+from os import listdir, path
 from threading import Thread
 from itertools import count as it_count
 from lib.socket_tcp import Socket
 from lib.logger import logger
+from lib.statistics import statistics
 import lib.protocol as prt
-from os import listdir, path
 
 
 def _handle_upload_file(skt: Socket) -> None:
+    statistics["requests"]["upload-file"] += 1
+    prt.send_status(skt, prt.NO_ERR)
+
     filename = prt.recv_filename(skt)
 
     with open(filename, 'wb') as f:
         for file_chunk in prt.recv_file(skt):
             f.write(file_chunk)
-    return
+
+    logger.info(f"File {filename} uploaded.")
+    statistics["files"]["uploads"] += 1
 
 
 def _handle_download_file(skt: Socket) -> None:
+    statistics["requests"]["download-file"] += 1
+    prt.send_status(skt, prt.NO_ERR)
+
     filename = prt.recv_filename(skt)
 
     try:
         with open(filename, 'rb') as f:
+            prt.send_status(skt, prt.NO_ERR)
             prt.send_file(skt, f)
+            statistics["files"]["downloads"] += 1
+            logger.info(f"File {filename} downloaded.")
     except FileNotFoundError:
-        prt.send_error()
-        pass
+        prt.send_status(skt, prt.FILE_NOT_FOUND_ERR)
 
 
 def _handle_list_files(skt: Socket) -> None:
+    statistics["requests"]["list-files"] += 1
+    prt.send_status(skt, prt.NO_ERR)
+
     files_list = []
     for file in listdir():
         if path.isdir(file):
@@ -35,9 +49,7 @@ def _handle_list_files(skt: Socket) -> None:
 
     prt.send_list(skt, files_list)
 
-
-def _handle_unknown_cmd(skt: Socket) -> None:
-    pass
+    logger.info("Files list sent.")
 
 
 class ClientHandler:
@@ -66,18 +78,20 @@ class ClientHandler:
             _handle_list_files(self.skt)
 
         else:
-            _handle_unknown_cmd(self.skt)
+            prt.send_status(self.skt, prt.UNKNOWN_OP_ERR)
 
         logger.debug(f"[ClientHandler:{self.id}] Finished.")
         self.running = False
 
     def join(self, force=False):
         if force:
+            logger.debug(f"[ClientHandler:{self.id}] Forcing join.")
             self.skt.close()
             self.running = False
             # finish connection
 
         self.th.join()
+        logger.debug(f"[ClientHandler:{self.id}] Joined.")
 
     def is_done(self):
         return not self.running

@@ -1,12 +1,14 @@
 #!/usr/bin/python3
 """
-List Files description.
+Sends a request to the specified server in order to receive the available
+files to download from it.
 """
+
 from datetime import datetime
 from lib.cli_parse import parse_args_list
 from lib.socket_tcp import Socket
-from lib.protocol import LIST_FILES_OP, send_opcode, recv_list
 from lib.logger import logger
+import lib.protocol as prt
 
 
 def get_size_readable(size: int) -> str:
@@ -20,14 +22,22 @@ def get_size_readable(size: int) -> str:
         return f"{(size / (2**20)):.2f} MB"
 
 
-def main():
-    """
-    TODO: Description
-    """
+def main(args):
+    logger.setLevel(args.level)
 
-    args = parse_args_list()
     skt = Socket()
     skt.connect(args.ADDR, args.PORT)
+
+    prt.send_opcode(skt, prt.LIST_FILES_OP)
+    s = prt.recv_status(skt)
+    if s:
+        raise RuntimeError(prt.get_error_msg(s))
+
+    files_list = prt.recv_list(skt)
+
+    if not files_list:
+        print("No hay archivos disponibles en el servidor.")
+        return 0
 
     sorted_by = {
         "name": 0,
@@ -35,10 +45,7 @@ def main():
         "date": 2
     }
 
-    send_opcode(skt, LIST_FILES_OP)
-
-    files_list = recv_list(skt)
-    print(f"Archivos disponibles: ({len(files_list)})")
+    print(f"Archivos disponibles ({len(files_list)}):")
 
     files_list.sort(reverse=not args.ASC,
                     key=lambda x: x[sorted_by[args.SORT_KEY]])
@@ -46,11 +53,13 @@ def main():
         mtime = datetime.fromtimestamp(mtime).strftime('%d-%b-%Y (%H:%M:%S)')
         print(f"> [{mtime}] {filename} - {get_size_readable(size)}")
 
-    return
+    return 0
 
 
 if __name__ == "__main__":
+    args = parse_args_list()
     try:
-        main()
-    except Exception as e:
+        main(args)
+    except BaseException as e:
         logger.fatal(e)
+        exit(1)

@@ -10,7 +10,7 @@ from lib.logger import logger, DEBUG_LEVEL, INFO_LEVEL, FATAL_LEVEL
 from lib.statistics import statistics, print_statistics
 from __main__ import __doc__ as description
 
-DEFAULT_DIRPATH = "./files"
+DEFAULT_DIRPATH = "files"
 
 
 def parse_args():
@@ -49,6 +49,7 @@ def main():
     except FileNotFoundError as e:
         if args.DIRPATH == DEFAULT_DIRPATH:
             mkdir(args.DIRPATH)
+            chdir(args.DIRPATH)
         else:
             logger.fatal(e.strerror + args.DIRPATH)
             exit(1)

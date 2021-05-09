@@ -53,8 +53,19 @@ def parse_args_download():
 
 
 def _args_list(parser):
-    # parser.add_argument() Agregar argumentos para ls?
-    pass
+    group = parser.add_mutually_exclusive_group()
+    group.add_argument("-n", "--by-name", action="store_const",
+                       dest="SORT_KEY", const="name", default="name",
+                       help="sort by file name")
+    group.add_argument("-s", "--by-size", action="store_const",
+                       dest="SORT_KEY", const="size",
+                       help="sort by file size")
+    group.add_argument("-d", "--by-date", action="store_const",
+                       dest="SORT_KEY", const="date",
+                       help="sort by last modified date")
+
+    parser.add_argument("-a", "--ascending", action="store_true",
+                        dest="ASC", default=False, help="use ascending sort (default: descending)")
 
 
 def parse_args_list():

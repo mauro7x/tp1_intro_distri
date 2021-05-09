@@ -8,6 +8,7 @@ from lib.cli_parse import parse_args_download
 from lib.socket_tcp import Socket
 from lib.protocol import (
     send_opcode, DOWNLOAD_FILE_OP, send_filename, recv_file)
+from lib.logger import logger
 
 
 def main():
@@ -31,4 +32,7 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    try:
+        main()
+    except Exception as e:
+        logger.fatal(e)

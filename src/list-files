@@ -4,14 +4,22 @@
 """
 List Files description.
 """
+from datetime import datetime
 from lib.cli_parse import parse_args_list
 from lib.socket_tcp import Socket
 from lib.protocol import LIST_FILES_OP, send_opcode, recv_list
-from datetime import datetime
+from lib.logger import logger
 
 
 def get_size_readable(size: int) -> str:
-    pass
+    assert size >= 0
+
+    if size < 2**10:
+        return f"{(size):.2f} B"
+    elif size < 2**20:
+        return f"{(size / (2**10)):.2f} KB"
+    elif size < 2**30:
+        return f"{(size / (2**20)):.2f} MB"
 
 
 def main():
@@ -23,17 +31,28 @@ def main():
     skt = Socket()
     skt.connect(args.ADDR, args.PORT)
 
+    sorted_by = {
+        "name": 0,
+        "size": 1,
+        "date": 2
+    }
+
     send_opcode(skt, LIST_FILES_OP)
 
     files_list = recv_list(skt)
     print(f"Archivos disponibles: ({len(files_list)})")
+
+    files_list.sort(reverse=not args.ASC,
+                    key=lambda x: x[sorted_by[args.SORT_KEY]])
     for filename, size, mtime in files_list:
-        print(
-            f"* [{datetime.fromtimestamp(mtime)}] {filename} - "
-            f"{get_size_readable(size)}")
+        mtime = datetime.fromtimestamp(mtime).strftime('%d-%b-%Y (%H:%M:%S)')
+        print(f"> [{mtime}] {filename} - {get_size_readable(size)}")
 
     return
 
 
 if __name__ == "__main__":
-    main()
+    try:
+        main()
+    except Exception as e:
+        logger.fatal(e)

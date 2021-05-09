@@ -54,3 +54,7 @@ class Socket:
             bytes_recd += len(segment)
 
         return b''.join(data)
+
+    def __del__(self):
+        logger.debug("[Socket] Closing file descriptor.")
+        self.close()

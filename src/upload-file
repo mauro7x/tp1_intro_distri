@@ -4,9 +4,11 @@
 """
 Upload file script description.
 """
+from os import path
 from lib.cli_parse import parse_args_upload
 from lib.socket_tcp import Socket
 from lib.protocol import UPLOAD_FILE_OP, send_opcode, send_file, send_filename
+from lib.logger import logger
 
 
 def main():
@@ -15,6 +17,9 @@ def main():
     """
 
     args = parse_args_upload()
+
+    if not path.isfile(args.FILEPATH):
+        raise FileNotFoundError(f"File not found: {args.FILEPATH}")
 
     skt = Socket()
     skt.connect(args.ADDR, args.PORT)
@@ -30,4 +35,7 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    try:
+        main()
+    except BaseException as e:
+        logger.fatal(e)

@@ -29,13 +29,13 @@ FILE_NOT_FOUND_ERR = 2
 
 def encode_int(i: int) -> bytearray:
     """
-    Se transforma el numero entero al valor binario.
+    Encode the integer type value to binary type.
 
-    Parametros:
-    i(int): Un numero entero
+    Parameters:
+    i(int): An integer number.
 
     Returns:
-    bytes(bytearray): El valor binario.
+    bytes(bytearray): A binary value.
     """
 
     return i.to_bytes(INT_SIZE, INT_ENCODING)
@@ -43,13 +43,14 @@ def encode_int(i: int) -> bytearray:
 
 def decode_int(bytes: bytearray) -> int:
     """
-    Se transforma el numero binario a un valor entero
+    Decode the binary value to an integer value.
 
-    Parametros:
-    bytes(bytearray): Un numero binario
+
+    Parameters:
+    bytes(bytearray): Binary value.
 
     Returns:
-    i(int): El valor entero.
+    i(int): An integer number.
     """
     return int.from_bytes(bytes, INT_ENCODING)
 
@@ -59,11 +60,11 @@ def decode_int(bytes: bytearray) -> int:
 
 def send_status(skt: Socket, status: int) -> None:
     """
-    Se envia el estado en forma binaria.
+    send the opcode of status in binary format.
 
-    Parametros:
-    skt(socket): un socket.
-    status(int): El opcode del estado
+    Parameters:
+    skt(socket): Socket.
+    status(int): Opcode of status.
 
     Returns:
     None
@@ -73,24 +74,24 @@ def send_status(skt: Socket, status: int) -> None:
 
 def recv_status(skt: Socket) -> int:
     """
-    Se recibe el opcode del estado y devolver en forma entero
+    Receive the status opcode and return it with integer value.
 
-    Parametros:
-    skt(socket): un socket.
+    Parameters:
+    skt(socket): Socket.
 
     Returns:
-    opcode(int): El opcode del estado.
+    opcode(int): Opcode of status.
     """
     return int.from_bytes(skt.recv(STATUS_SIZE), INT_ENCODING)
 
 
 def send_opcode(skt: Socket, opcode: int) -> None:
     """
-    Se envia el estado del comando en forma binaria
+    Send the command opcode in binary format.
 
-    Parametros:
-    skt(socket): un socket.
-    status(int): El opcode del comando.
+    Parameters:
+    skt(socket): Socket.
+    status(int): Command opcode
 
     Returns:
     None
@@ -100,24 +101,24 @@ def send_opcode(skt: Socket, opcode: int) -> None:
 
 def recv_opcode(skt: Socket) -> int:
     """
-    Se recibe el opcode del comando y devolver en forma entero
+    Receives the command opcode and return it with integer value.
 
-    Parametros:
-    skt(socket): un socket.
+    Parameters:
+    skt(socket): Socket.
 
     Returns:
-    opcode(int): El opcode del comando.
+    opcode(int): Command opcode.
     """
     return int.from_bytes(skt.recv(OPCODE_SIZE), INT_ENCODING)
 
 
 def send_filename(skt: Socket, filename: str) -> None:
     """
-    Se envia el nombre del archivo en forma binaria
+    Send the filename with binary formate
 
-    Parametros:
-    skt(socket): un socket.
-    filename(str): El nombre del archivo
+    Parameters:
+    skt(socket): Socket.
+    filename(str): the name of file.
 
     Returns:
     None
@@ -129,13 +130,13 @@ def send_filename(skt: Socket, filename: str) -> None:
 
 def recv_filename(skt: Socket) -> str:
     """
-    Se recibe el nombre del archivo y devolver en forma cadena
+    Receives the filename and return it with string type.
 
-    Parametros:
-    skt(socket): un socket.
+    Parameters:
+    skt(socket): Socket.
 
     Returns:
-    filename(str): El nombre del archivo.
+    filename(str): The name of file.
     """
     filename_size = decode_int(skt.recv(INT_SIZE))
     filename = skt.recv(filename_size).decode()
@@ -144,11 +145,11 @@ def recv_filename(skt: Socket) -> str:
 
 def send_file(skt: Socket, f):
     """
-    Se envia el archivo en forma binaria
+    Send the file with binay format
 
-    Parametros:
-    skt(socket): un socket.
-    f(FILE): El archivo que desea enviar
+    Parameters:
+    skt(socket): Socket.
+    f(FILE): The file.
 
     Returns:
     None
@@ -167,10 +168,10 @@ def send_file(skt: Socket, f):
 
 def recv_file(skt: Socket):
     """
-    Se recibe el archivo y escribirlo en un archivo nuevo
+    Receive the file and write it into a new file.
 
-    Parametros:
-    skt(socket): un socket.
+    Parameters:
+    skt(socket): Socket.
 
     Returns:
     None
@@ -188,11 +189,11 @@ def recv_file(skt: Socket):
 
 def send_list(skt: Socket, list: list) -> None:
     """
-    Se envia la lista de informaciones en forma binaria
+    Send the list of information about the file with binary format.
 
-    Parametros:
-    skt(socket): un socket.
-    list(list): Una lista de informaciones
+    Parameters:
+    skt(socket):Socket.
+    list(list): List of information about the file.
 
     Returns:
     None
@@ -208,13 +209,13 @@ def send_list(skt: Socket, list: list) -> None:
 
 def recv_list(skt: Socket) -> list:
     """
-    Se recibe la lista desde socket y devolverla
+    Receives the list of information about file and return the list
 
-    Parametros:
-    skt(socket): un socket.
+    Parameters:
+    skt(socket): Socket.
 
     Returns:
-    list(list): Una lista de informaciones.
+    list(list): List of information about the file.
     """
     total_len = decode_int(skt.recv(INT_SIZE))
 
@@ -235,13 +236,13 @@ def recv_list(skt: Socket) -> list:
 
 def get_error_msg(err_code: int) -> str:
     """
-    Se recibe el error code y devolver el mensaje corresponde
+    Receives the error code and return the related message.
 
-    Parametros:
-    err_code(int): El codigo del error.
+    Parameters:
+    err_code(int): The code of error.
 
     Returns:
-    mensaje(str): El mensaje del error.
+    mensaje(str): The message of error.
     """
     if err_code == UNKNOWN_OP_ERR:
         return "Opcode desconocido por el servidor."

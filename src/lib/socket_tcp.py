@@ -8,10 +8,10 @@ class Socket:
 
     def __init__(self, skt: socket = None) -> None:
         """
-        Inicializacion de la clase socket.
+        Inicialization of socket class.
 
-        Parametros:
-        skt(socket): una clase de socket inicializado con valor NULL
+        Parameters:
+        skt(socket): a socket class with inicial value NULL.
 
         Returns:
         None.
@@ -26,11 +26,11 @@ class Socket:
 
     def connect(self, host: str, port: int) -> None:
         """
-        Conexion con la direccion y el puerto.
+        Build a connection with a especific host address and a port number.
 
-        Parametros:
-        host(str): La direccion de host.
-        port(int): EL numero de puerto.
+        Parameters:
+        host(str): Host address.
+        port(int): Number of port.
 
         Returns:
         None.
@@ -41,13 +41,12 @@ class Socket:
 
     def bind(self, host: str, port: int) -> None:
         """
-        Asignacion de un socket local con address a un socket que 
-        esta identificado por file descriptor que no tiene un direccion
-        local aun.
+        assign a local socket address address to a socket identified 
+        by descriptor socket that has no local socket address assigned. 
 
-        Parametros:
-        host(str): La direccion de host.
-        port(int): EL numero de puerto.
+        Parameters:
+        host(str): Host address.
+        port(int): Number of port.
 
         Returns:
         None.
@@ -59,10 +58,10 @@ class Socket:
 
     def listen(self, queue: int = 10) -> None:
         """
-        Establece a escuchar los requests de las conexiones de clientes
+        mark a connection-mode socket, specified by the socket argument, as accepting connections.
 
-        Parametros:
-        queue(int): Cantidad de conexiones a esuchar
+        P:
+        queue(int): Amount of connection to listen.
 
         Returns:
         None.
@@ -71,14 +70,15 @@ class Socket:
 
     def accept(self):
         """
-        Creacion de un nuevo socket descriptor con las mismas 
-        propiedades y devolverlo a lo que llama.
+        extracts the first  connection request on the queue of pending connections for the
+        listening socket, sockfd, creates a new connected socket, and  returns a new file 
+        descriptor referring to that socket.
 
-        Parametros:
+        Parameters:
         None
 
         Returns:
-        peer(socket): Un socket con el mismo protocolo y el tipo de familia.
+        peer(socket): Un socket with the same  protocol and familiy type
         """
         logger.debug("[Socket] Accepting client...")
         peer, addr = self.skt.accept()
@@ -87,9 +87,9 @@ class Socket:
 
     def close(self) -> None:
         """
-        Se cierra el socket
+        Close the socket
 
-        Parametros:
+        Parameters:
         None.
 
         Returns:
@@ -105,10 +105,10 @@ class Socket:
 
     def send(self, data: bytearray) -> None:
         """
-        Se envia los datos desde el socket corresponde
+        Initiate transmission of a message from the specified socket to its peer. 
 
-        Parametros:
-        data(bytearray): Los datos en formato binario.
+        Parameters:
+        data(bytearray): Data in binary format.
 
         Returns:
         None.
@@ -125,10 +125,10 @@ class Socket:
 
     def recv(self, size: int) -> bytearray:
         """
-        Se recibe los datos a partir del socket
+        Receives data on a socket with descriptor socket and stores it in a buffer.
 
-        Parametros:
-        size(int): La cantidad de bytes de los datos va a recibir.
+        Parameters:
+        size(int): The size of buffer that need to be stored.
 
         Returns:
         None.
@@ -147,9 +147,9 @@ class Socket:
 
     def __del__(self):
         """
-        Se destruye la clase
+        Destory the class
 
-        Parametros:
+        Parameters:
         None.
 
         Returns:

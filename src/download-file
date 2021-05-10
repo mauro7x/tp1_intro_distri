@@ -61,9 +61,13 @@ def main(args):
     if s:
         raise RuntimeError(prt.get_error_msg(s))
 
+    logger.info("Downloading file...")
+
     with open(filepath, 'wb') as f:
         for file_chunk in prt.recv_file(skt):
             f.write(file_chunk)
+
+    logger.info("File downloaded.")
 
     return 0
 

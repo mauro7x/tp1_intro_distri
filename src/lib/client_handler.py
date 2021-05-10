@@ -49,7 +49,7 @@ def _handle_list_files(skt: Socket) -> None:
 
     prt.send_list(skt, files_list)
 
-    logger.info("Files list sent.")
+    logger.debug("Files list sent.")
 
 
 class ClientHandler:

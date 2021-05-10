@@ -27,8 +27,12 @@ def main(args):
 
     prt.send_filename(skt, args.FILENAME)
 
+    logger.info("Uploading file...")
+
     with open(args.FILEPATH, 'rb') as f:
         prt.send_file(skt, f)
+
+    logger.info("File uploaded.")
 
     return 0
 

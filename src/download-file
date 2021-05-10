@@ -4,14 +4,49 @@ Sends a request to the specified server in order to download the specified
 file.
 """
 
+from os import path, chdir, mkdir
 from lib.cli_parse import parse_args_download
 from lib.socket_tcp import Socket
 from lib.logger import logger
 import lib.protocol as prt
 
 
+def create_dir(dirpath: str) -> bool:
+    option = None
+    while option not in ['y', 'n']:
+        option = input(f"Directory '{dirpath}/' not found. "
+                       + "Do you want to create it? (y/n): ").lower()
+    if option == 'n':
+        return False
+    return True
+
+
+def navigate_to_dirpath(filepath: str) -> str:
+    paths = filepath.split('/')
+    subdirs = paths[:-1]
+    dirpath = '/'.join(subdirs)
+    filepath = paths[-1]
+
+    # if dirname not exists, ask user if we should create it
+    if not path.isdir(dirpath):
+        if not create_dir(dirpath):
+            return None
+
+    # create subdirs
+    for subdir in subdirs:
+        if not path.isdir(subdir):
+            mkdir(subdir)
+        chdir(subdir)
+
+    return filepath
+
+
 def main(args):
     logger.setLevel(args.level)
+
+    filepath = navigate_to_dirpath(args.FILEPATH)
+    if filepath == None:
+        return 0
 
     skt = Socket()
     skt.connect(args.ADDR, args.PORT)
@@ -26,7 +61,7 @@ def main(args):
     if s:
         raise RuntimeError(prt.get_error_msg(s))
 
-    with open(args.FILEPATH, 'wb') as f:
+    with open(filepath, 'wb') as f:
         for file_chunk in prt.recv_file(skt):
             f.write(file_chunk)
 

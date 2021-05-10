@@ -3,7 +3,7 @@ from collections import deque
 from lib.client_handler import ClientHandler
 from lib.socket_tcp import Socket
 from lib.logger import logger
-from lib.statistics import statistics
+from lib.stats import stats
 
 
 class Accepter:
@@ -22,7 +22,7 @@ class Accepter:
                 peer = self.skt.accept()
             except OSError:
                 break
-            statistics["connections"] += 1
+            stats["connections"] += 1
             self.clients.append(ClientHandler(peer))
             self._join_connections()
         self._join_connections(True)

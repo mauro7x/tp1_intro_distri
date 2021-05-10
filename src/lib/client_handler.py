@@ -3,12 +3,12 @@ from threading import Thread
 from itertools import count as it_count
 from lib.socket_tcp import Socket
 from lib.logger import logger
-from lib.statistics import statistics
+from lib.stats import stats
 import lib.protocol as prt
 
 
 def _handle_upload_file(skt: Socket) -> None:
-    statistics["requests"]["upload-file"] += 1
+    stats["requests"]["upload-file"] += 1
     prt.send_status(skt, prt.NO_ERR)
 
     filename = prt.recv_filename(skt)
@@ -18,11 +18,11 @@ def _handle_upload_file(skt: Socket) -> None:
             f.write(file_chunk)
 
     logger.info(f"File {filename} uploaded.")
-    statistics["files"]["uploads"] += 1
+    stats["files"]["uploads"] += 1
 
 
 def _handle_download_file(skt: Socket) -> None:
-    statistics["requests"]["download-file"] += 1
+    stats["requests"]["download-file"] += 1
     prt.send_status(skt, prt.NO_ERR)
 
     filename = prt.recv_filename(skt)
@@ -31,14 +31,14 @@ def _handle_download_file(skt: Socket) -> None:
         with open(filename, 'rb') as f:
             prt.send_status(skt, prt.NO_ERR)
             prt.send_file(skt, f)
-            statistics["files"]["downloads"] += 1
+            stats["files"]["downloads"] += 1
             logger.info(f"File {filename} downloaded.")
     except FileNotFoundError:
         prt.send_status(skt, prt.FILE_NOT_FOUND_ERR)
 
 
 def _handle_list_files(skt: Socket) -> None:
-    statistics["requests"]["list-files"] += 1
+    stats["requests"]["list-files"] += 1
     prt.send_status(skt, prt.NO_ERR)
 
     files_list = []

@@ -1,7 +1,7 @@
 from socket import (socket, AF_INET, SOCK_STREAM, SHUT_RDWR,
                     SOL_SOCKET, SO_REUSEADDR)
 from lib.logger import logger
-from lib.statistics import statistics
+from lib.stats import stats
 
 
 class Socket:
@@ -48,7 +48,7 @@ class Socket:
         bytes_sent = 0
         while bytes_sent < total_bytes:
             last_sent = self.skt.send(data[bytes_sent:])
-            statistics['bytes']['sent'] += last_sent
+            stats['bytes']['sent'] += last_sent
             if last_sent == 0:
                 raise RuntimeError("Socket closed by the peer.")
 
@@ -59,7 +59,7 @@ class Socket:
         bytes_recd = 0
         while bytes_recd < size:
             segment = self.skt.recv(size - bytes_recd)
-            statistics['bytes']['recd'] += len(segment)
+            stats['bytes']['recd'] += len(segment)
             if segment == b'':
                 raise RuntimeError("Socket closed by the peer.")
             data.append(segment)

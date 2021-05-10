@@ -8,7 +8,7 @@ from argparse import ArgumentParser
 from lib.socket_tcp import Socket
 from lib.accepter import Accepter
 from lib.logger import logger, DEBUG_LEVEL, INFO_LEVEL, FATAL_LEVEL
-from lib.statistics import statistics, print_statistics
+from lib.stats import stats, print_stats
 from __main__ import __doc__ as description
 
 DEFAULT_DIRPATH = "files"
@@ -57,20 +57,20 @@ def main(args):
     accepter = Accepter(skt)
     logger.info(f"Listening on port {args.PORT}.")
 
-    logger.info("Enter `s` to print statistics, or `q` to exit.")
+    logger.info("Enter `s` to print stats, or `q` to exit.")
     try:
         while True:
             option = input()
             if option == 's':
-                print_statistics()
+                print_stats()
             elif option == 'q':
                 raise EOFError
-            logger.info("Enter `s` to print statistics, or `q` to exit.")
+            logger.info("Enter `s` to print stats, or `q` to exit.")
     except EOFError:
         accepter.stop()
 
     if args.level < FATAL_LEVEL:
-        print_statistics()
+        print_stats()
 
     return 0
 

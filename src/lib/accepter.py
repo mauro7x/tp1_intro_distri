@@ -19,11 +19,11 @@ class Accepter:
         while self.accepting:
             logger.debug("[Accepter] Waiting for client...")
             try:
-                peer = self.skt.accept()
+                addr, peer = self.skt.accept()
             except OSError:
                 break
             stats["connections"] += 1
-            self.clients.append(ClientHandler(peer))
+            self.clients.append(ClientHandler(peer, addr))
             self._join_connections()
         self._join_connections(True)
 

@@ -9,12 +9,10 @@ class Socket:
     def __init__(self, skt: socket = None) -> None:
         """
         Inicialization of socket class.
+        Wrapper around socket(2).
 
         Parameters:
-        skt(socket): a socket class with inicial value NULL.
-
-        Returns:
-        None.
+        [skt(Socket)]: Socket instance with valid fd to be copied.
         """
 
         logger.debug("[Socket] Creating socket...")
@@ -27,10 +25,11 @@ class Socket:
     def connect(self, host: str, port: int) -> None:
         """
         Build a connection with a especific host address and a port number.
+        Wrapper around connect(2).
 
         Parameters:
-        host(str): Host address.
-        port(int): Number of port.
+        host: Host address.
+        port(int): Port number.
 
         Returns:
         None.
@@ -41,12 +40,12 @@ class Socket:
 
     def bind(self, host: str, port: int) -> None:
         """
-        assign a local socket address address to a socket identified 
-        by descriptor socket that has no local socket address assigned. 
+        Binds the socket to the received address and port number.
+        Wrapper around bind(2) and setsockopt(2).
 
         Parameters:
         host(str): Host address.
-        port(int): Number of port.
+        port(int): Port number.
 
         Returns:
         None.
@@ -58,10 +57,11 @@ class Socket:
 
     def listen(self, queue: int = 10) -> None:
         """
-        mark a connection-mode socket, specified by the socket argument, as accepting connections.
+        Marks a connection-mode socket, specified by the socket argument, as accepting connections.
+        Wrapper around listen(2).
 
-        P:
-        queue(int): Amount of connection to listen.
+        Parameters:
+        queue(int): Max size for waiting queue.
 
         Returns:
         None.
@@ -70,24 +70,26 @@ class Socket:
 
     def accept(self):
         """
-        extracts the first  connection request on the queue of pending connections for the
-        listening socket, sockfd, creates a new connected socket, and  returns a new file 
-        descriptor referring to that socket.
+        Accepts one connection from the waiting queue, uses the file
+        descriptor to create a peet Socket, and then starts a
+        ClientHandler for it.
+        Wrapper around accept(2).
 
         Parameters:
         None
 
         Returns:
-        peer(socket): Un socket with the same  protocol and familiy type
+        peer(Socket): Peer socket for connected client.
         """
         logger.debug("[Socket] Accepting client...")
         peer, addr = self.skt.accept()
-        logger.debug(f"[Socket] Client connected from {addr[0]}:{addr[1]}.")
-        return Socket(peer)
+        logger.debug(f"[Socket] Client accepted from {addr[0]}:{addr[1]}.")
+        return addr, Socket(peer)
 
     def close(self) -> None:
         """
-        Close the socket
+        Shutdowns and closes the socket, releasing resources.
+        Wrapper around shutdown(2) and close(2).
 
         Parameters:
         None.
@@ -105,7 +107,8 @@ class Socket:
 
     def send(self, data: bytearray) -> None:
         """
-        Initiate transmission of a message from the specified socket to its peer. 
+        Loops until all data is sent through the socket.
+        Similar to send_all socket method.
 
         Parameters:
         data(bytearray): Data in binary format.
@@ -125,13 +128,13 @@ class Socket:
 
     def recv(self, size: int) -> bytearray:
         """
-        Receives data on a socket with descriptor socket and stores it in a buffer.
+        Loops until size bytes of data are received through the socket.
+        Similar to recv_all socket method.
 
         Parameters:
         size(int): The size of buffer that need to be stored.
 
-        Returns:
-        None.
+        Returns: Array of binary data received.
         """
         data = []
         bytes_recd = 0
@@ -147,12 +150,7 @@ class Socket:
 
     def __del__(self):
         """
-        Destory the class
-
-        Parameters:
-        None.
-
-        Returns:
-        None.
+        Destructor for releasing resources in case something goes wrong.
+        Wrapper around close(2).
         """
         self.close()

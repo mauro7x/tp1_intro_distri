@@ -45,7 +45,6 @@ def decode_int(bytes: bytearray) -> int:
     """
     Decode the binary value to an integer value.
 
-
     Parameters:
     bytes(bytearray): Binary value.
 
@@ -60,10 +59,10 @@ def decode_int(bytes: bytearray) -> int:
 
 def send_status(skt: Socket, status: int) -> None:
     """
-    send the opcode of status in binary format.
+    Send the opcode of status in binary format.
 
     Parameters:
-    skt(socket): Socket.
+    skt(Socket): Socket.
     status(int): Opcode of status.
 
     Returns:
@@ -77,7 +76,7 @@ def recv_status(skt: Socket) -> int:
     Receive the status opcode and return it with integer value.
 
     Parameters:
-    skt(socket): Socket.
+    skt(Socket): Socket.
 
     Returns:
     opcode(int): Opcode of status.
@@ -90,7 +89,7 @@ def send_opcode(skt: Socket, opcode: int) -> None:
     Send the command opcode in binary format.
 
     Parameters:
-    skt(socket): Socket.
+    skt(Socket): Socket.
     status(int): Command opcode
 
     Returns:
@@ -104,7 +103,7 @@ def recv_opcode(skt: Socket) -> int:
     Receives the command opcode and return it with integer value.
 
     Parameters:
-    skt(socket): Socket.
+    skt(Socket): Socket.
 
     Returns:
     opcode(int): Command opcode.
@@ -114,11 +113,11 @@ def recv_opcode(skt: Socket) -> int:
 
 def send_filename(skt: Socket, filename: str) -> None:
     """
-    Send the filename with binary formate
+    Send the filename with binary format.
 
     Parameters:
-    skt(socket): Socket.
-    filename(str): the name of file.
+    skt(Socket): Socket.
+    filename(str): the name of file, must be open with binary ('b') mode.
 
     Returns:
     None
@@ -133,7 +132,7 @@ def recv_filename(skt: Socket) -> str:
     Receives the filename and return it with string type.
 
     Parameters:
-    skt(socket): Socket.
+    skt(Socket): Socket.
 
     Returns:
     filename(str): The name of file.
@@ -145,10 +144,10 @@ def recv_filename(skt: Socket) -> str:
 
 def send_file(skt: Socket, f):
     """
-    Send the file with binay format
+    Send the file with binay format.
 
     Parameters:
-    skt(socket): Socket.
+    skt(Socket): Socket.
     f(FILE): The file.
 
     Returns:
@@ -171,13 +170,13 @@ def send_file(skt: Socket, f):
 
 def recv_file(skt: Socket):
     """
-    Receive the file and write it into a new file.
+    Create an iterator to recive a file.
 
     Parameters:
-    skt(socket): Socket.
+    skt(Socket): Socket.
 
     Returns:
-    None
+    file_chunk(bytearray): A file chunk in binary format.
     """
     file_size = decode_int(skt.recv(INT_SIZE))
     if file_size < 0:
@@ -194,11 +193,12 @@ def recv_file(skt: Socket):
 
 def send_list(skt: Socket, list: list) -> None:
     """
-    Send the list of information about the file with binary format.
+    Send the list of files information about the file with binary format.
 
     Parameters:
-    skt(socket):Socket.
-    list(list): List of information about the file.
+    skt(Socket):Socket.
+    list(list(tuple)): List of information about the file [('filename', size,
+                       last_mtime), ...]
 
     Returns:
     None
@@ -214,13 +214,14 @@ def send_list(skt: Socket, list: list) -> None:
 
 def recv_list(skt: Socket) -> list:
     """
-    Receives the list of information about file and return the list
+    Receives and return a list of files.
 
     Parameters:
-    skt(socket): Socket.
+    skt(Socket): Socket.
 
     Returns:
-    list(list): List of information about the file.
+    list(list(tuple)): List of information about the file. [('filename', size,
+                       last_mtime), ...]
     """
     total_len = decode_int(skt.recv(INT_SIZE))
 
@@ -244,10 +245,10 @@ def get_error_msg(err_code: int) -> str:
     Receives the error code and return the related message.
 
     Parameters:
-    err_code(int): The code of error.
+    err_code(int): The error code.
 
     Returns:
-    mensaje(str): The message of error.
+    mensaje(str): The error message.
     """
     if err_code == UNKNOWN_OP_ERR:
         return "Opcode desconocido por el servidor."

@@ -178,9 +178,6 @@ def send_file(skt: Socket, f, progress: bool = False):
     if progress:
         print()
 
-    if (e := recv_status(skt)) != NO_ERR:
-        raise RuntimeError(get_error_msg(e))
-
 
 def recv_file(skt: Socket, progress: bool = False):
     """
@@ -211,8 +208,6 @@ def recv_file(skt: Socket, progress: bool = False):
 
     if progress:
         print()
-
-    send_status(skt, NO_ERR)
 
 
 def send_list(skt: Socket, list: list) -> None:

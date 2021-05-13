@@ -4,7 +4,7 @@ from lib.formatters import get_size_readable
 
 
 def progress_bar(current, total, inverted=False, bar_length=20):
-    percent = int(100 * (current / total))
+    percent = int(100 * (current / total if total > 0 else 1))
     perlength = int(bar_length * percent / 100)
     progress = '=' * perlength
     remaining = ' ' * (bar_length - perlength)

@@ -64,7 +64,7 @@ def main(args):
     logger.info("Downloading file...")
 
     with open(filepath, 'wb') as f:
-        for file_chunk in prt.recv_file(skt):
+        for file_chunk in prt.recv_file(skt, True):
             f.write(file_chunk)
 
     logger.info("File downloaded.")

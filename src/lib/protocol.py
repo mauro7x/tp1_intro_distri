@@ -1,5 +1,7 @@
 from os import SEEK_END
 from lib.socket_tcp import Socket
+from lib.progress import progress_bar
+from lib.logger import logger, FATAL_LEVEL
 
 # -----------------------------------------------------------------------------
 # constants
@@ -142,51 +144,73 @@ def recv_filename(skt: Socket) -> str:
     return filename
 
 
-def send_file(skt: Socket, f):
+def send_file(skt: Socket, f, progress: bool = False):
     """
     Send the file with binay format.
 
     Parameters:
     skt(Socket): Socket.
     f(FILE): The file.
+    [progress(bool)]: Flag for showing the progress bar.
 
     Returns:
     None
     """
+    progress &= logger.level < FATAL_LEVEL
+
     f.seek(0, SEEK_END)
     filesize = f.tell()
     f.seek(0)
 
     skt.send(encode_int(filesize))
 
+    sent = 0
+    if progress:
+        progress_bar(sent, filesize)
     chunk = f.read(CHUNK_SIZE)
     while chunk:
         skt.send(chunk)
+        sent += len(chunk)
+        if progress:
+            progress_bar(sent, filesize)
         chunk = f.read(CHUNK_SIZE)
+
+    if progress:
+        print()
 
     if (e := recv_status(skt)) != NO_ERR:
         raise RuntimeError(get_error_msg(e))
 
 
-def recv_file(skt: Socket):
+def recv_file(skt: Socket, progress: bool = False):
     """
     Create an iterator to recive a file.
 
     Parameters:
     skt(Socket): Socket.
+    [progress(bool)]: Flag for showing the progress bar.
 
     Returns:
     file_chunk(bytearray): A file chunk in binary format.
     """
-    file_size = decode_int(skt.recv(INT_SIZE))
-    if file_size < 0:
+    progress &= logger.level < FATAL_LEVEL
+
+    filesize = decode_int(skt.recv(INT_SIZE))
+    if filesize < 0:
         pass
 
     recd = 0
-    while recd < file_size:
-        file_chunk = skt.recv(min(file_size - recd, CHUNK_SIZE))
+    if progress:
+        progress_bar(recd, filesize, True)
+    while recd < filesize:
+        file_chunk = skt.recv(min(filesize - recd, CHUNK_SIZE))
         recd += len(file_chunk)
+        if progress:
+            progress_bar(recd, filesize, True)
         yield file_chunk
+
+    if progress:
+        print()
 
     send_status(skt, NO_ERR)
 

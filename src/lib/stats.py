@@ -2,6 +2,7 @@
 # to show when server is closed
 
 from datetime import datetime
+from lib.formatters import get_size_readable
 
 stats = {
     "connections": 0,
@@ -39,8 +40,8 @@ def print_stats():
 
     print("> Bytes transferred:")
     bytes = stats['bytes']
-    print(f"  * Sent: {bytes['sent']}")
-    print(f"  * Received: {bytes['recd']}")
+    print(f"  * Sent: {get_size_readable(bytes['sent'])}")
+    print(f"  * Received: {get_size_readable(bytes['recd'])}")
 
     print("> Files:")
     files = stats['files']

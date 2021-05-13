@@ -8,18 +8,8 @@ from datetime import datetime
 from lib.cli_parse import parse_args_list
 from lib.socket_tcp import Socket
 from lib.logger import logger
+from lib.formatters import get_size_readable
 import lib.protocol as prt
-
-
-def get_size_readable(size: int) -> str:
-    assert size >= 0
-
-    if size < 2**10:
-        return f"{(size):.2f} B"
-    elif size < 2**20:
-        return f"{(size / (2**10)):.2f} KB"
-    elif size < 2**30:
-        return f"{(size / (2**20)):.2f} MB"
 
 
 def main(args):

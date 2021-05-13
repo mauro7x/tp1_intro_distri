@@ -1,7 +1,8 @@
 # parse.py
 from argparse import ArgumentParser
-from __main__ import __doc__ as description
+from __main__ import __doc__ as description, __file__
 from lib.logger import DEBUG_LEVEL, INFO_LEVEL, FATAL_LEVEL
+from lib.constants import DEFAULT_ADDR, DEFAULT_PORT
 
 
 def _parse_args(add_args=None):
@@ -9,7 +10,7 @@ def _parse_args(add_args=None):
     Parse args using `argparse` in order to fullfil requirements.
     """
 
-    parser = ArgumentParser(description=description)
+    parser = ArgumentParser(description=description, prog=__file__)
     group = parser.add_mutually_exclusive_group()
     group.add_argument("-v", "--verbose", action="store_const",
                        dest="level", const=DEBUG_LEVEL, default=INFO_LEVEL,
@@ -18,9 +19,9 @@ def _parse_args(add_args=None):
                        dest="level", const=FATAL_LEVEL,
                        help="Decrease output verbosity")
     parser.add_argument("-H", "--host", dest="ADDR", type=str,
-                        default="localhost", help="service IP address")
+                        default=DEFAULT_ADDR, help="service IP address")
     parser.add_argument("-p", "--port", dest="PORT", type=int,
-                        default=4321, help="service port")
+                        default=DEFAULT_PORT, help="service port")
 
     if add_args is not None:
         add_args(parser)
@@ -65,7 +66,8 @@ def _args_list(parser):
                        help="sort by last modified date")
 
     parser.add_argument("-a", "--ascending", action="store_true",
-                        dest="ASC", default=False, help="use ascending sort (default: descending)")
+                        dest="ASC", default=False,
+                        help="use ascending sort (default: descending)")
 
 
 def parse_args_list():

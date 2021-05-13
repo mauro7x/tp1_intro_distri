@@ -57,7 +57,8 @@ class Socket:
 
     def listen(self, queue: int = 10) -> None:
         """
-        Marks a connection-mode socket, specified by the socket argument, as accepting connections.
+        Marks a connection-mode socket, specified by the socket argument, as
+        accepting connections.
         Wrapper around listen(2).
 
         Parameters:

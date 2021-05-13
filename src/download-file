@@ -45,7 +45,7 @@ def main(args):
     logger.setLevel(args.level)
 
     filepath = navigate_to_dirpath(args.FILEPATH)
-    if filepath == None:
+    if filepath is None:
         return 0
 
     skt = Socket()
